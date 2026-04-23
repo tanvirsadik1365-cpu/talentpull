@@ -1,18 +1,18 @@
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone } from "lucide-react";
 
 const MobileCTABar = ({ setOpenModal }: any) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden glass-card border-t border-border/50 px-3 py-2 flex gap-2">
+    <div className="mobile-fixed-action fixed bottom-0 left-0 right-0 z-50 flex gap-2 border-t border-border/50 bg-background/90 px-3 py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] backdrop-blur-xl md:hidden">
       <button
-  onClick={() => setOpenModal(true)}
-  className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-center text-sm font-semibold"
->
-  Start Free Trial
-</button>
-      
+        onClick={() => setOpenModal(true)}
+        className="flex-1 rounded-lg bg-primary py-2 text-center text-sm font-semibold text-primary-foreground"
+      >
+        Start Free Trial
+      </button>
+
       <a
         href="tel:+447424822813"
-        className="w-11 h-11 rounded-lg bg-accent text-foreground flex items-center justify-center flex-shrink-0 border border-border"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-accent text-foreground"
         aria-label="Call"
       >
         <Phone size={20} />

@@ -15,4 +15,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+
+  // 🔐 IMPORTANT (THIS HIDES CLEAN CODE IN DEVTOOLS)
+  build: {
+    sourcemap: false, // ❌ disable readable source maps
+    minify: "esbuild", // ✅ ensure minified output
+  },
 });

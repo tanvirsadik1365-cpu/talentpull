@@ -66,57 +66,64 @@ const Pricing = ({ setOpenModal }: any) => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-10 text-center md:mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4">
+          <h2 className="mb-4 text-[2rem] font-extrabold sm:text-3xl md:text-4xl lg:text-5xl">
             Simple Monthly Packages For <span className="text-primary">Restaurant Growth</span>
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan, i) => (
+        <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
+          {plans.map((plan, index) => (
             <motion.div
-              key={i}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className={`glass-card p-8 relative ${
+              transition={{ delay: index * 0.1 }}
+              className={`glass-card relative mx-auto w-full max-w-md p-5 sm:p-8 ${
                 plan.popular ? "border-primary/50 glow-primary" : ""
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
                   Most Popular
                 </div>
               )}
-              <div className="text-center mb-6">
-                <h3 className="text-sm font-bold tracking-widest text-muted-foreground mb-3">
+
+              <div className="mb-6 text-center">
+                <h3 className="mb-3 text-sm font-bold tracking-widest text-muted-foreground">
                   {plan.name}
                 </h3>
-                <p className="text-4xl font-extrabold">
+
+                <p className="text-3xl font-extrabold sm:text-4xl">
                   {plan.price}
-                  <span className="text-base font-normal text-muted-foreground"> + VAT / Monthly</span>
+                  <span className="block pt-1 text-sm font-normal text-muted-foreground sm:inline sm:pt-0 sm:text-base">
+                    {" "}
+                    + VAT / Monthly
+                  </span>
                 </p>
               </div>
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-3 text-sm">
-                    <Check className="text-secondary flex-shrink-0 mt-0.5" size={16} />
-                    <span>{f}</span>
+
+              <ul className="mb-8 space-y-3">
+                {plan.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-start gap-3 text-sm">
+                    <Check className="mt-0.5 shrink-0 text-secondary" size={16} />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
+
               <button
-  onClick={() => setOpenModal(true)}
-  className={`w-full text-center py-3 rounded-lg font-semibold transition-all hover:opacity-90 ${
-    plan.popular
-      ? "bg-primary text-primary-foreground"
-      : "bg-accent text-foreground border border-border"
-  }`}
->
-  Start Free Trial
-</button>
+                onClick={() => setOpenModal(true)}
+                className={`w-full rounded-lg py-3 text-center font-semibold transition-all hover:opacity-90 ${
+                  plan.popular
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-accent text-foreground"
+                }`}
+              >
+                Start Free Trial
+              </button>
             </motion.div>
           ))}
         </div>

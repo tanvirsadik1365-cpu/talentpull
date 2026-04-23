@@ -1,141 +1,127 @@
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
+import { scrollToSection } from "@/lib/scroll-to-section";
+
+const quickLinks = [
+  { label: "Features", href: "#features" },
+  { label: "Calculator", href: "#calculator" },
+  { label: "Services", href: "#services" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "Contact", href: "#contact" },
+];
+
 const Footer = () => {
   return (
-    <footer className="border-t border-border py-14">
+    <footer className="border-t border-border py-12 md:py-14">
       <div className="container-main">
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-
-          {/* BRAND */}
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-
-            {/* LOGO */}
-            <div className="mb-5">
+            <button
+              type="button"
+              onClick={() => scrollToSection("#top")}
+              className="mb-5 block bg-transparent p-0"
+            >
               <img
-                src="/logo.png"
+                src="/logo-optimized.png"
                 alt="Talentpull"
+                width={2500}
+                height={580}
+                loading="lazy"
+                decoding="async"
                 className="h-6 w-auto object-contain"
               />
-            </div>
+            </button>
 
-            {/* ADDRESS */}
-            <address className="text-sm text-muted-foreground not-italic leading-relaxed">
-              Talentpull Ltd<br/>
-              802 Salcombe Court<br/>
-              16 St Ives Place<br/>
-              London, E14 0HX<br/>
+            <address className="text-sm not-italic leading-relaxed text-muted-foreground">
+              Talentpull Ltd
+              <br />
+              802 Salcombe Court
+              <br />
+              16 St Ives Place
+              <br />
+              London, E14 0HX
+              <br />
               United Kingdom
             </address>
 
-            <p className="text-xs text-muted-foreground mt-3">
-              Company number: 16624016
-            </p>
-
+            <p className="mt-3 text-xs text-muted-foreground">Company number: 16624016</p>
           </div>
 
-
-          {/* QUICK LINKS */}
           <div>
-            <h4 className="font-semibold mb-5">Quick Links</h4>
+            <h4 className="mb-5 font-semibold">Quick Links</h4>
 
             <ul className="space-y-3 text-sm text-muted-foreground">
-              {[
-                "Features",
-                "Calculator",
-                "Portfolio",
-                "Pricing",
-                "Testimonials",
-                "Contact"
-              ].map((l) => (
-                <li key={l}>
-                  <a
-                    href={`#${l.toLowerCase()}`}
-                    className="hover:text-primary transition-colors"
+              {quickLinks.map((item) => (
+                <li key={item.label}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      scrollToSection(item.href);
+                    }}
+                    className="text-left transition-colors hover:text-primary"
                   >
-                    {l}
-                  </a>
+                    {item.label}
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
-
-          {/* CONTACT */}
           <div>
+            <h4 className="mb-5 font-semibold">Contact</h4>
 
-            <h4 className="font-semibold mb-5">Contact</h4>
-
-            {/* WHATSAPP */}
             <a
               href="https://wa.me/447424822813"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
             >
               <MessageCircle size={18} />
               WhatsApp
             </a>
 
-
-            {/* SOCIAL ICONS */}
-            <div className="flex gap-3 mt-5">
-
+            <div className="mt-5 flex gap-3">
               <a
                 href="https://www.facebook.com/talentpull.uk.marketing/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white transition-all duration-300"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
               >
-                <Facebook size={18}/>
+                <Facebook size={18} />
               </a>
 
               <a
                 href="https://www.instagram.com/talentpull_marketing_agency"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white transition-all duration-300"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
               >
-                <Instagram size={18}/>
+                <Instagram size={18} />
               </a>
-
             </div>
-
           </div>
 
-
-          {/* LEGAL */}
           <div>
-
-            <h4 className="font-semibold mb-5">Legal</h4>
+            <h4 className="mb-5 font-semibold">Legal</h4>
 
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a 
-                href="/privacy-policy" 
-                className="hover:text-primary transition-colors"
-                > 
-                Privacy Policy
+                <a href="/privacy-policy" className="transition-colors hover:text-primary">
+                  Privacy Policy
                 </a>
               </li>
-
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
-                  Terms of Service
-                </a>
+                <span className="text-muted-foreground/70">Terms of Service</span>
               </li>
             </ul>
-
           </div>
-
         </div>
 
-
-        {/* BOTTOM */}
-        <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Talentpull Ltd. All rights reserved.
+        <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
+          Copyright {new Date().getFullYear()} Talentpull Ltd. All rights reserved.
         </div>
-
       </div>
     </footer>
   );

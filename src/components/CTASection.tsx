@@ -2,27 +2,28 @@ import { motion } from "framer-motion";
 
 const CTASection = ({ setOpenModal }: any) => {
   return (
-    <section id="contact" className="section-padding">
+    <section className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-12 md:p-16 text-center glow-primary"
+          className="glow-primary rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-8 text-center sm:p-10 md:p-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground mb-4">
+          <h2 className="mb-4 text-[2rem] font-extrabold text-primary-foreground sm:text-3xl md:text-4xl lg:text-5xl">
             Ready To Stop Paying 30% Commission On Every Order?
           </h2>
-          <p className="text-primary-foreground/80 text-lg max-w-xl mx-auto mb-8">
+
+          <p className="mx-auto mb-8 max-w-xl text-base text-primary-foreground/80 sm:text-lg">
             Take control of your restaurant's online growth with Talentpull.
           </p>
+
           <button
             onClick={() => setOpenModal(true)}
-            className="inline-block px-10 py-4 rounded-xl bg-background text-foreground font-bold text-lg hover:opacity-90 transition-opacity"
+            className="inline-block rounded-xl bg-background px-8 py-3.5 text-base font-bold text-foreground transition-opacity hover:opacity-90 sm:px-10 sm:py-4 sm:text-lg"
           >
             Start Free Trial
           </button>
-
         </motion.div>
       </div>
     </section>

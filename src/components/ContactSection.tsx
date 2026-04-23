@@ -1,221 +1,189 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, MessageCircle, MailCheckIcon } from "lucide-react";
-import WhatsAppButton from "./WhatsAppButton";
+import { MailCheckIcon, MapPin, MessageCircle, Phone } from "lucide-react";
+
+const inputClassName =
+  "w-full rounded-lg border border-border bg-accent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary";
+
+const contactItems = [
+  {
+    icon: MapPin,
+    title: "Visit Us",
+    body: "802 Salcombe Court, Aberfeldy Village, London, United Kingdom",
+  },
+  {
+    icon: Phone,
+    title: "Call Support",
+    body: "020 4578 3585",
+  },
+  {
+    icon: MessageCircle,
+    title: "WhatsApp (074 2482 2813)",
+    body: "We'll contact you after submission.",
+  },
+  {
+    icon: MailCheckIcon,
+    title: "Email Us",
+    body: "info@talentpull.uk",
+  },
+];
+
+const quickReplies = ["Need more orders.", "Website.", "Ads help.", "Full system."];
 
 const ContactSection = () => {
-
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setLoading(true);
 
-    const form = e.currentTarget;
+    const form = event.currentTarget;
     const data = new FormData(form);
 
-    const res = await fetch("https://formspree.io/f/mnljpjyr", {
+    const response = await fetch("https://formspree.io/f/mnljpjyr", {
       method: "POST",
       body: data,
       headers: { Accept: "application/json" },
     });
 
-    if (res.ok) {
+    if (response.ok) {
       setSuccess(true);
       form.reset();
+      setMessage("");
     }
 
     setLoading(false);
   };
 
   return (
-    <section className="py-24 px-4">
-
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-
-        {/* LEFT */}
-        <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }}>
-
-          <div className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
+    <section id="contact" className="section-padding">
+      <div className="container-main grid items-start gap-10 lg:grid-cols-[0.95fr,1.05fr] lg:gap-12">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold text-primary">
             GET IN TOUCH
           </div>
 
-          <h2 className="text-primary text-3xl md:text-5xl font-bold mb-6 leading-tight">
-            Let’s take back control of your restaurant.
+          <h2 className="mb-6 text-[2rem] font-bold leading-tight text-primary sm:text-4xl md:text-5xl">
+            Let's take back control of your restaurant.
           </h2>
 
-          <p className="text-black-foreground mb-10 max-w-md">
-            Stop relying on delivery apps. Build your own system,
-            grow direct orders, and keep more of your profit.
+          <p className="mb-8 max-w-md text-base text-muted-foreground sm:mb-10">
+            Stop relying on delivery apps. Build your own system, grow direct orders,
+            and keep more of your profit.
           </p>
 
           <div className="space-y-6">
+            {contactItems.map((item) => (
+              <div key={item.title} className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <item.icon size={18} />
+                </div>
 
-            <div className="flex gap-4 items-center">
-              <div className="icon-box"><MapPin size={18}/></div>
-              <div>
-                <p className="font-semibold">Visit Us</p>
-                <p className="font-bold text-sm text-muted-foreground">802 Salcombe Court, Aberfeldy Village, London, United Kingdom</p>
+                <div className="space-y-1">
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="text-sm leading-6 text-muted-foreground">{item.body}</p>
+                </div>
               </div>
-            </div>
-
-            <div className="flex gap-4 items-center">
-              <div className="icon-box"><Phone size={18}/></div>
-              <div>
-                <p className="font-semibold">Call Support</p>
-                <p className="text-sm text-muted-foreground">
-                  020 4578 3585
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-center">
-              <div className="icon-box"><MessageCircle size={18}/></div>
-              <div>
-                <p className="font-semibold">WhatsApp (074 2482 2813)</p>
-                <p className="text-sm text-muted-foreground">
-                  We’ll contact you after submission
-                </p>
-              </div>
-            </div>
-
-          <div className="flex gap-4 items-center">
-              <div className="icon-box"><MailCheckIcon size={18}/></div>
-              <div>
-                <p className="font-semibold">Email Us</p>
-                <p className="text-sm text-muted-foreground">
-                  info@talentpull.uk
-                </p>
-              </div>
-            </div>
-
+            ))}
           </div>
         </motion.div>
 
-
-        {/* RIGHT FORM (AUDIT STYLE) */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          className="text-primary glass-card p-8 rounded-2xl space-y-4"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          className="glass-card space-y-4 rounded-2xl p-5 sm:p-8"
         >
-
           {!success ? (
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <input name="name" placeholder="Your Name" required className={inputClassName} />
+                <input name="phone" placeholder="Mobile Number" required className={inputClassName} />
+              </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <input name="email" placeholder="Email Address" required className={inputClassName} />
+                <input name="postcode" placeholder="Postcode" className={inputClassName} />
+              </div>
 
-  {/* ROW 1 */}
-  <div className="text-primary grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <input name="name" placeholder="Your Name" required className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-    <input name="phone" placeholder="Mobile Number" required className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-  </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <input name="business" placeholder="Business Name" className={inputClassName} />
+                <input name="website" placeholder="Website URL" className={inputClassName} />
+              </div>
 
-  {/* ROW 2 */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <input name="email" placeholder="Email Address" required className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-    <input name="postcode" placeholder="Postcode" className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-  </div>
+              <div className="flex flex-wrap gap-2">
+                {quickReplies.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setMessage(item)}
+                    className="rounded-full border border-border bg-accent px-3 py-2 text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
 
- {/* ROW 3 */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-  <input name="business" placeholder="Business Name" className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-  <input name="Website" placeholder="Website Url" className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"/>
-  </div>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                placeholder="Tell us about your restaurant..."
+                className={`${inputClassName} resize-none`}
+              />
 
-  {/* TAGS */}
-  <div className="flex flex-wrap gap-2">
-    {["Need more orders.","Website.","Ads help.","Full system"].map((item)=>(
-      <button
-        key={item}
-        type="button"
-        onClick={()=>{
-          const textarea = document.getElementById("message") as HTMLTextAreaElement;
-          if(textarea) textarea.value = item;
-        }}
-        className="tag-btn"
-      >
-        {item}
-      </button>
-    ))}
-  </div>
+              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:items-center">
+                <p className="text-sm text-foreground">
+                  Security check: <span className="font-medium text-white">6 + 3 = ?</span>
+                </p>
 
-  {/* MESSAGE */}
-  <textarea
-  id="message"
-  name="message"
-  placeholder="Tell us about your restaurant..."
-  className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-/>
+                <input
+                  name="security"
+                  placeholder="Type answer"
+                  required
+                  className={inputClassName}
+                />
+              </div>
 
-  {/* SECURITY (FIXED POSITION) */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-primary py-4 text-lg font-bold text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50"
+              >
+                {loading ? "Sending..." : "Get Free Growth Plan"}
+              </button>
 
-  <p className="text-sm text-foreground">
-    Security check: <span className="text-white font-medium">6 + 3 = ?</span>
-  </p>
-
-  <input
-    name="security"
-    placeholder="Type answer"
-    required
-    className="w-half bg-white/10 border border-border rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-  />
-
-</div>
-
-  {/* BUTTON */}
-  <button
-    type="submit"
-    disabled={loading}
-    className="
-      w-full py-4 text-lg font-bold
-      rounded-xl
-      bg-primary
-      text-white
-      shadow-lg shadow-primary/30
-      hover:shadow-primary/50
-      transition-all
-    "
-  >
-    {loading ? "Sending..." : "Get Free Growth Plan"}
-  </button>
-
-  {/* TRUST */}
-  <div className="text-center space-y-1">
-    <p className="text-xs font-bold text-muted-foreground">
-      No contracts • No setup fee • Cancel anytime
-    </p>
-
-    <p className="text-xs text-primary font-medium">
-      Limited free trial slots available this month
-    </p>
-
-    <p className="text-xs font-bold text-muted-foreground">
-      We reply within 10 minutes on WhatsApp
-    </p>
-  </div>
-
-</form>
-
+              <div className="space-y-1 text-center">
+                <p className="text-xs font-bold text-muted-foreground">
+                  No contracts, no setup fee, cancel anytime.
+                </p>
+                <p className="text-xs font-medium text-primary">
+                  Limited free trial slots available this month
+                </p>
+                <p className="text-xs font-bold text-muted-foreground">
+                  We reply within 10 minutes on WhatsApp
+                </p>
+              </div>
+            </form>
           ) : (
-
-            <div className="text-center py-10">
-              <h3 className="text-2xl font-bold text-primary mb-3">
-                🎉 You're all set!
-              </h3>
+            <div className="py-10 text-center">
+              <h3 className="mb-3 text-2xl font-bold text-primary">You're all set!</h3>
               <p className="text-muted-foreground">
                 Your request has been received.
-                <br /> We’ll contact you shortly.
+                <br /> We'll contact you shortly.
               </p>
             </div>
-
           )}
-
         </motion.div>
-
       </div>
-
     </section>
   );
 };

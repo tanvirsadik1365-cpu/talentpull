@@ -1,15 +1,64 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import {
+  ArrowRight,
+  BarChart3,
+  Calculator,
+  Globe,
+  Menu,
+  MessageCircle,
+  Phone,
+  ShoppingBag,
+  TrendingUp,
+  X,
+} from "lucide-react";
+
+import { scrollToSection } from "@/lib/scroll-to-section";
 
 const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Calculator", href: "#calculator" },
-  { label: "Services", href: "#services" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Contact", href: "#contact" },
+  {
+    label: "Features",
+    href: "#features",
+    icon: BarChart3,
+    description: "See where revenue is leaking",
+  },
+  {
+    label: "Calculator",
+    href: "#calculator",
+    icon: Calculator,
+    description: "Estimate lost commission fast",
+  },
+  {
+    label: "Services",
+    href: "#services",
+    icon: Globe,
+    description: "Explore the full growth stack",
+  },
+  {
+    label: "Portfolio",
+    href: "#portfolio",
+    icon: ShoppingBag,
+    description: "Browse real restaurant wins",
+  },
+  {
+    label: "Pricing",
+    href: "#pricing",
+    icon: TrendingUp,
+    description: "Choose the right package",
+  },
+  {
+    label: "Testimonials",
+    href: "#testimonials",
+    icon: MessageCircle,
+    description: "Hear from restaurant owners",
+  },
+  {
+    label: "Contact",
+    href: "#contact",
+    icon: Phone,
+    description: "Talk to the Talentpull team",
+  },
 ];
 
 const Navbar = ({ setOpenModal }: any) => {
@@ -18,99 +67,208 @@ const Navbar = ({ setOpenModal }: any) => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
+
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "backdrop-blur-xl bg-background/70 border-b border-border/50"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-[1300px] mx-auto px-6 flex items-center justify-between h-[72px]">
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.classList.toggle("mobile-nav-open", mobileOpen);
 
-        {/* LOGO */}
-        <a href="#" className="flex items-center">
-          <img
-            src="/logo.png"
-            alt="Talentpull"
-            className="h-9 md:h-10 w-auto object-contain transition-transform duration-300 hover:scale-105"
-          />
-        </a>
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    }
 
-        {/* DESKTOP MENU */}
-        <div className="hidden lg:flex items-center gap-10">
+    return () => {
+      document.body.classList.remove("mobile-nav-open");
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
 
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="relative text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+  const navigateTo = (href: string, closeMobileMenu = false) => {
+    if (closeMobileMenu) {
+      setMobileOpen(false);
+      window.setTimeout(() => scrollToSection(href), 180);
+      return;
+    }
+
+    scrollToSection(href);
+  };
+
+  const mobileMenu =
+    mobileOpen && typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <button
+              type="button"
+              aria-label="Close mobile menu"
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-[80] bg-black/55 backdrop-blur-[2px] animate-in fade-in duration-200 lg:hidden"
+            />
+
+            <div
+              id="mobile-navigation"
+              className="pointer-events-auto fixed bottom-[88px] left-4 right-4 top-[84px] z-[90] overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.98),rgba(10,13,21,0.98))] shadow-[0_30px_80px_rgba(0,0,0,0.45)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-300 lg:hidden"
             >
-              {link.label}
+              <div className="pointer-events-none absolute -right-10 -top-16 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
+              <div className="pointer-events-none absolute left-0 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-secondary/10 blur-3xl" />
+              <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/20" />
 
-              {/* underline animation */}
-              <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-          ))}
-
-          {/* CTA BUTTON */}
-          <button
-  onClick={() => setOpenModal(true)}
-  className="ml-4 px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"
->
-  Start Free Trial
-</button>
-        </div>
-
-        {/* MOBILE MENU BUTTON */}
-        <button
-          className="lg:hidden p-2 text-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
-
-      {/* MOBILE MENU */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden backdrop-blur-xl bg-background/90 border-t border-border/50 overflow-hidden"
-          >
-            <div className="max-w-[1300px] mx-auto px-6 py-6 flex flex-col gap-4">
-
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground py-2 transition-colors"
-                  onClick={() => setMobileOpen(false)}
+              <div className="relative h-full overflow-y-auto overscroll-contain p-4">
+                <div
+                  className="mb-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 animate-in fade-in-0 slide-in-from-top-1"
+                  style={{ animationDelay: "40ms", animationFillMode: "both" } as CSSProperties}
                 >
-                  {link.label}
-                </a>
-              ))}
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Quick Navigation</p>
+                      <p className="text-xs text-muted-foreground">Jump to any section instantly</p>
+                    </div>
+                    <div className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+                      Mobile
+                    </div>
+                  </div>
+                </div>
 
-              <a
-                href="#pricing"
-                className="mt-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground text-center font-semibold shadow-lg"
-                onClick={() => setMobileOpen(false)}
-              >
-                Start Free Trial
-              </a>
+                <div className="space-y-2">
+                  {navLinks.map((link, index) => {
+                    const Icon = link.icon;
 
+                    return (
+                      <button
+                        key={link.href}
+                        type="button"
+                        onClick={() => navigateTo(link.href, true)}
+                        className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition-all duration-300 hover:border-primary/30 hover:bg-white/[0.05] active:scale-[0.98] animate-in fade-in-0 slide-in-from-bottom-2"
+                        style={
+                          {
+                            animationDelay: `${80 + index * 60}ms`,
+                            animationDuration: "300ms",
+                            animationFillMode: "both",
+                          } as CSSProperties
+                        }
+                      >
+                        <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/20 to-secondary/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                          <Icon size={18} />
+                        </span>
+
+                        <span className="relative min-w-0 flex-1">
+                          <span className="block text-sm font-semibold text-foreground">{link.label}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{link.description}</span>
+                        </span>
+
+                        <ArrowRight
+                          size={16}
+                          className="relative shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    window.setTimeout(() => setOpenModal?.(true), 180);
+                  }}
+                  className="relative mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-primary px-6 py-3.5 text-center font-semibold text-primary-foreground shadow-[0_16px_36px_rgba(255,122,61,0.28)] transition-all duration-300 hover:shadow-[0_18px_40px_rgba(255,122,61,0.36)] active:scale-[0.98] animate-in fade-in-0 slide-in-from-bottom-2"
+                  style={
+                    {
+                      animationDelay: "220ms",
+                      animationDuration: "320ms",
+                      animationFillMode: "both",
+                    } as CSSProperties
+                  }
+                >
+                  <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.18),transparent_35%,transparent_65%,rgba(255,255,255,0.12))]" />
+                  <span className="relative">Start Free Trial</span>
+                  <ArrowRight size={16} className="relative" />
+                </button>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+          </>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      <nav
+        className={`fixed left-0 right-0 top-0 z-[70] transition-all duration-300 ${
+          scrolled
+            ? "border-b border-border/50 bg-background/75 backdrop-blur-2xl"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="mx-auto flex h-[72px] max-w-[1300px] items-center justify-between px-4 sm:px-6">
+          <button
+            type="button"
+            onClick={() => navigateTo("#top")}
+            className="flex items-center bg-transparent p-0"
+            aria-label="Go to top"
+          >
+            <img
+              src="/logo-optimized.png"
+              alt="Talentpull"
+              width={2500}
+              height={580}
+              className="h-8 w-auto object-contain transition-transform duration-300 hover:scale-105 md:h-10"
+            />
+          </button>
+
+          <div className="hidden items-center gap-10 lg:flex">
+            {navLinks.map((link) => (
+              <button
+                key={link.href}
+                type="button"
+                onClick={() => {
+                  navigateTo(link.href);
+                }}
+                className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+              </button>
+            ))}
+
+            <button
+              onClick={() => setOpenModal?.(true)}
+              className="ml-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-95"
+            >
+              Start Free Trial
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen((value) => !value)}
+            className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border transition-all duration-300 active:scale-95 lg:hidden ${
+              mobileOpen
+                ? "border-primary/50 bg-primary/15 text-primary shadow-[0_12px_32px_rgba(255,122,61,0.2)]"
+                : "border-white/10 bg-white/[0.04] text-foreground shadow-[0_12px_32px_rgba(0,0,0,0.2)]"
+            }`}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
+          >
+            <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_60%)]" />
+            <span className="pointer-events-none absolute inset-x-2 top-0 h-px bg-white/25" />
+            <span
+              className={`relative z-10 transition-transform duration-200 ${
+                mobileOpen ? "rotate-90 scale-105" : "rotate-0 scale-100"
+              }`}
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {mobileMenu}
+    </>
   );
 };
 
