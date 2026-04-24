@@ -69,6 +69,15 @@
     pointer-events: none;
     transform: translateY(14px);
   }
+
+  @media (max-width: 767px) {
+    body.contact-section-visible .mobile-fixed-action {
+      animation: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px);
+    }
+  }
 }
 
 @layer components {

@@ -64,6 +64,43 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
+## Contact form email setup
+
+The contact forms post to `/api/contact`, which sends lead emails to `talentpull.uk@gmail.com`.
+This route requires a Node/serverless host such as Vercel.
+
+Set these environment variables in your hosting dashboard before publishing:
+
+```sh
+CONTACT_TO_EMAIL=talentpull.uk@gmail.com
+CONTACT_FROM_EMAIL=talentpull.uk@gmail.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=talentpull.uk@gmail.com
+SMTP_PASS=your_gmail_app_password_here
+```
+
+For Gmail, use a Gmail App Password for `SMTP_PASS`, not your normal Gmail password.
+
+### Hostinger Business Node.js setup
+
+Use Hostinger's Node.js Web App option, not static hosting.
+
+Recommended settings:
+
+```sh
+Framework/type: Other or Express.js
+Build command: npm install && npm run build
+Start command: npm start
+Entry file: server.js
+Output directory: dist
+Node.js version: 20.x or 22.x
+```
+
+Add the same environment variables listed above in the Hostinger Node.js app settings,
+then redeploy or restart the app.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

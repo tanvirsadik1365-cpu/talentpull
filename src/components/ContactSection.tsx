@@ -1,9 +1,26 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { MailCheckIcon, MapPin, MessageCircle, Phone } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  MailCheckIcon,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Send,
+  ShieldCheck,
+} from "lucide-react";
+import { toast } from "sonner";
+
+const FORM_ENDPOINT = "/api/contact";
+const SECURITY_ANSWER = "9";
 
 const inputClassName =
-  "w-full rounded-lg border border-border bg-accent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary";
+  "w-full rounded-xl border border-white/10 bg-accent/90 px-4 py-3.5 text-sm text-foreground shadow-inner shadow-black/10 transition placeholder:text-muted-foreground/80 focus:border-primary/60 focus:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60";
+
+type FormStatus = "idle" | "error";
 
 const contactItems = [
   {
@@ -28,60 +45,154 @@ const contactItems = [
   },
 ];
 
-const quickReplies = ["Need more orders.", "Website.", "Ads help.", "Full system."];
+const quickReplies = [
+  "Need more direct orders.",
+  "New website.",
+  "Meta ads support.",
+  "Full growth system.",
+];
+
+const getSubmissionError = async (response: Response) => {
+  try {
+    const data = await response.json();
+    const responseMessage = data?.errors?.[0]?.message || data?.message;
+
+    if (responseMessage) {
+      return responseMessage;
+    }
+  } catch {
+    // Some hosts return an empty body on server failures.
+  }
+
+  return "We could not send the form right now. Please try again or message us on WhatsApp.";
+};
 
 const ContactSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState("");
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        document.body.classList.toggle("contact-section-visible", entry.isIntersecting);
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(section);
+
+    return () => {
+      document.body.classList.remove("contact-section-visible");
+      observer.disconnect();
+    };
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setStatus("idle");
+    setStatusMessage("");
     setLoading(true);
 
     const form = event.currentTarget;
     const data = new FormData(form);
+    const payload = Object.fromEntries(data.entries());
+    const securityAnswer = String(data.get("security") || "").trim();
 
-    const response = await fetch("https://formspree.io/f/mnljpjyr", {
-      method: "POST",
-      body: data,
-      headers: { Accept: "application/json" },
-    });
+    if (securityAnswer !== SECURITY_ANSWER) {
+      const errorMessage = "Please answer the security check correctly before sending.";
+      setStatus("error");
+      setStatusMessage(errorMessage);
+      toast.error(errorMessage);
+      setLoading(false);
+      return;
+    }
 
-    if (response.ok) {
+    payload.message = message.trim() || "No extra message provided.";
+    payload.lead_source = "TalentPull website contact section";
+    payload.page = window.location.href;
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorMessage = await getSubmissionError(response);
+        setStatus("error");
+        setStatusMessage(errorMessage);
+        toast.error(errorMessage);
+        return;
+      }
+
       setSuccess(true);
       form.reset();
       setMessage("");
+      toast.success("Thanks, your request has been sent.");
+    } catch {
+      const errorMessage =
+        "Something went wrong while sending. Please try again or contact us directly.";
+      setStatus("error");
+      setStatusMessage(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <section id="contact" className="section-padding">
-      <div className="container-main grid items-start gap-10 lg:grid-cols-[0.95fr,1.05fr] lg:gap-12">
+    <section ref={sectionRef} id="contact" className="section-padding bg-background">
+      <div className="container-main grid items-start gap-8 lg:grid-cols-[0.92fr,1.08fr] lg:gap-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
+          className="lg:sticky lg:top-24"
         >
-          <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold text-primary">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
+            <Clock3 size={14} />
             GET IN TOUCH
           </div>
 
-          <h2 className="mb-6 text-[2rem] font-bold leading-tight text-primary sm:text-4xl md:text-5xl">
-            Let's take back control of your restaurant.
+          <h2 className="mb-5 max-w-xl text-[2rem] font-extrabold leading-tight sm:text-4xl md:text-5xl">
+            Get a professional growth plan for your restaurant.
           </h2>
 
-          <p className="mb-8 max-w-md text-base text-muted-foreground sm:mb-10">
+          <p className="mb-7 max-w-lg text-base leading-7 text-muted-foreground sm:mb-9">
             Stop relying on delivery apps. Build your own system, grow direct orders,
             and keep more of your profit.
           </p>
 
-          <div className="space-y-6">
+          <div className="mb-8 grid gap-3 text-sm sm:grid-cols-3 lg:max-w-lg">
+            {["Free review", "Fast response", "No contract"].map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-card/40 px-3 py-2.5 text-foreground"
+              >
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-secondary" />
+                <span className="font-medium">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-5">
             {contactItems.map((item) => (
               <div key={item.title} className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
                   <item.icon size={18} />
                 </div>
 
@@ -98,88 +209,255 @@ const ContactSection = () => {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          className="glass-card space-y-4 rounded-2xl p-5 sm:p-8"
+          className="glass-card overflow-hidden rounded-2xl border-white/10"
         >
           {!success ? (
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <input name="name" placeholder="Your Name" required className={inputClassName} />
-                <input name="phone" placeholder="Mobile Number" required className={inputClassName} />
+            <form
+              action={FORM_ENDPOINT}
+              method="POST"
+              onSubmit={handleSubmit}
+              className="space-y-5 p-5 sm:p-7 lg:p-8"
+            >
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                  Free growth plan
+                </p>
+                <h3 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">
+                  Tell us where to send your plan
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Complete the form and we will reply on WhatsApp or email.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <input name="email" placeholder="Email Address" required className={inputClassName} />
-                <input name="postcode" placeholder="Postcode" className={inputClassName} />
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <input name="business" placeholder="Business Name" className={inputClassName} />
-                <input name="website" placeholder="Website URL" className={inputClassName} />
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {quickReplies.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setMessage(item)}
-                    className="rounded-full border border-border bg-accent px-3 py-2 text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-                placeholder="Tell us about your restaurant..."
-                className={`${inputClassName} resize-none`}
+              <input
+                type="text"
+                name="_gotcha"
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+                aria-hidden="true"
               />
 
-              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:items-center">
-                <p className="text-sm text-foreground">
-                  Security check: <span className="font-medium text-white">6 + 3 = ?</span>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Your name
+                  </span>
+                  <input
+                    name="name"
+                    type="text"
+                    placeholder="Full name"
+                    autoComplete="name"
+                    required
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Mobile number
+                  </span>
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="Mobile number"
+                    autoComplete="tel"
+                    required
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Email address
+                  </span>
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    required
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Postcode
+                  </span>
+                  <input
+                    name="postcode"
+                    type="text"
+                    placeholder="Restaurant postcode"
+                    autoComplete="postal-code"
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Business name
+                  </span>
+                  <input
+                    name="business"
+                    type="text"
+                    placeholder="Restaurant name"
+                    autoComplete="organization"
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Website
+                  </span>
+                  <input
+                    name="website"
+                    type="url"
+                    placeholder="https://"
+                    inputMode="url"
+                    disabled={loading}
+                    className={inputClassName}
+                  />
+                </label>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  What do you need help with?
                 </p>
+                <div className="flex flex-wrap gap-2">
+                  {quickReplies.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setMessage(item)}
+                      disabled={loading}
+                      className={`rounded-full border px-3.5 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                        message === item
+                          ? "border-primary/60 bg-primary/15 text-white"
+                          : "border-white/10 bg-accent/80 text-muted-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Message
+                </span>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Tell us about your restaurant, current orders, or what you want to improve."
+                  disabled={loading}
+                  className={`${inputClassName} min-h-32 resize-none`}
+                />
+              </label>
+
+              <div className="grid grid-cols-1 gap-4 rounded-xl border border-white/10 bg-background/35 p-4 sm:grid-cols-[1fr,0.9fr] sm:items-center">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Security check</p>
+                    <p className="text-sm text-muted-foreground">6 + 3 = ?</p>
+                  </div>
+                </div>
 
                 <input
                   name="security"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="Type answer"
                   required
+                  disabled={loading}
                   className={inputClassName}
                 />
               </div>
 
+              {status === "error" ? (
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive-foreground"
+                >
+                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                  <p>{statusMessage}</p>
+                </div>
+              ) : null}
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-primary py-4 text-lg font-bold text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-primary/50 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 sm:text-lg"
               >
-                {loading ? "Sending..." : "Get Free Growth Plan"}
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Sending request
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-5 w-5" />
+                    Get Free Growth Plan
+                  </>
+                )}
               </button>
 
-              <div className="space-y-1 text-center">
-                <p className="text-xs font-bold text-muted-foreground">
-                  No contracts, no setup fee, cancel anytime.
-                </p>
-                <p className="text-xs font-medium text-primary">
-                  Limited free trial slots available this month
-                </p>
-                <p className="text-xs font-bold text-muted-foreground">
-                  We reply within 10 minutes on WhatsApp
-                </p>
+              <div className="grid gap-2 border-t border-white/10 pt-4 text-center text-xs font-semibold text-muted-foreground sm:grid-cols-3">
+                <p>No contracts</p>
+                <p className="text-primary">Limited free trial slots</p>
+                <p>WhatsApp reply available</p>
               </div>
             </form>
           ) : (
-            <div className="py-10 text-center">
-              <h3 className="mb-3 text-2xl font-bold text-primary">You're all set!</h3>
-              <p className="text-muted-foreground">
-                Your request has been received.
-                <br /> We'll contact you shortly.
+            <div className="flex min-h-[520px] flex-col items-center justify-center p-6 text-center sm:p-10">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                <CheckCircle2 size={34} />
+              </div>
+              <h3 className="mb-3 text-2xl font-bold text-primary sm:text-3xl">
+                Request sent successfully
+              </h3>
+              <p className="max-w-md leading-7 text-muted-foreground">
+                Thanks. We have received your details and will contact you shortly on
+                WhatsApp or email.
               </p>
+              <div className="mt-6 rounded-xl border border-white/10 bg-background/35 px-4 py-3 text-sm text-muted-foreground">
+                Need faster help? WhatsApp us on{" "}
+                <a className="font-semibold text-primary" href="https://wa.me/447424822813">
+                  074 2482 2813
+                </a>
+                .
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSuccess(false);
+                  setStatus("idle");
+                  setStatusMessage("");
+                }}
+                className="mt-6 rounded-xl border border-white/10 bg-accent px-5 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary"
+              >
+                Send another request
+              </button>
             </div>
           )}
         </motion.div>
