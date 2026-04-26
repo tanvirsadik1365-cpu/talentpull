@@ -1,7 +1,5 @@
-import { Facebook, Instagram } from "lucide-react";
-
 import { scrollToSection } from "@/lib/scroll-to-section";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
+import SocialLinks from "@/components/SocialLinks";
 
 const quickLinks = [
   { label: "Features", href: "#features" },
@@ -13,12 +11,15 @@ const quickLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
+const companyHouseUrl =
+  "https://find-and-update.company-information.service.gov.uk/company/16624016";
+
 const Footer = () => {
   return (
-    <footer className="border-t border-border py-12 md:py-14">
+    <footer className="border-t border-border/70 bg-background pb-10 pt-24 md:py-14">
       <div className="container-main">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
+        <div className="grid gap-9 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.95fr_1.15fr_0.85fr] lg:gap-14">
+          <div className="max-w-sm">
             <button
               type="button"
               onClick={() => scrollToSection("#top")}
@@ -50,13 +51,23 @@ const Footer = () => {
               United Kingdom
             </address>
 
-            <p className="mt-3 text-xs text-muted-foreground">Company number: 16624016</p>
+            <a
+              href={companyHouseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track-event="social_click"
+              data-track-label="Companies House"
+              data-track-location="footer_company"
+              className="mt-4 inline-flex items-center rounded-lg border border-white/10 bg-accent/60 px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+            >
+              Company number: 16624016
+            </a>
           </div>
 
           <div>
-            <h4 className="mb-5 font-semibold">Quick Links</h4>
+            <h4 className="mb-4 text-sm font-semibold text-foreground">Quick Links</h4>
 
-            <ul className="space-y-3 text-sm text-muted-foreground">
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-muted-foreground sm:block sm:space-y-3">
               {quickLinks.map((item) => (
                 <li key={item.label}>
                   <button
@@ -77,50 +88,15 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="mb-5 font-semibold">Contact</h4>
-
-            <a
-              href="https://wa.me/447424822813"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-track-event="whatsapp_click"
-              data-track-label="Footer WhatsApp"
-              data-track-location="footer"
-              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
-            >
-              <WhatsAppIcon size={18} />
-              WhatsApp
-            </a>
-
-            <div className="mt-5 flex gap-3">
-              <a
-                href="https://www.facebook.com/talentpull.uk.marketing/"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-event="social_click"
-                data-track-label="Facebook"
-                data-track-location="footer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
-              >
-                <Facebook size={18} />
-              </a>
-
-              <a
-                href="https://www.instagram.com/talentpull_marketing_agency"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-event="social_click"
-                data-track-label="Instagram"
-                data-track-location="footer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
-              >
-                <Instagram size={18} />
-              </a>
-            </div>
+            <h4 className="mb-4 text-sm font-semibold text-foreground">Connect</h4>
+            <SocialLinks />
+            <p className="mt-4 max-w-xs text-xs leading-5 text-muted-foreground">
+              Follow, verify, or message Talentpull through official channels.
+            </p>
           </div>
 
           <div>
-            <h4 className="mb-5 font-semibold">Legal</h4>
+            <h4 className="mb-4 text-sm font-semibold text-foreground">Legal</h4>
 
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
@@ -135,14 +111,28 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a
+                  href={companyHouseUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track-event="social_click"
+                  data-track-label="Companies House"
+                  data-track-location="footer_legal"
+                  className="transition-colors hover:text-primary"
+                >
+                  Companies House
+                </a>
+              </li>
+              <li>
                 <span className="text-muted-foreground/70">Terms of Service</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          Copyright {new Date().getFullYear()} Talentpull Ltd. All rights reserved.
+        <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>Copyright {new Date().getFullYear()} Talentpull Ltd. All rights reserved.</p>
+          <p className="text-xs">Registered in England and Wales.</p>
         </div>
       </div>
     </footer>
