@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 const WhatsAppButton = () => {
   return (
@@ -6,11 +6,14 @@ const WhatsAppButton = () => {
       href="https://wa.me/447424822813"
       target="_blank"
       rel="noopener noreferrer"
-      className="mobile-fixed-action animate-pulse-glow fixed bottom-24 right-3 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-lg transition-opacity hover:opacity-90 will-change-transform md:bottom-6 md:right-4 md:h-14 md:w-14"
+      data-track-event="whatsapp_click"
+      data-track-label="Floating WhatsApp"
+      data-track-location="floating_button"
+      className="mobile-fixed-action animate-pulse-glow fixed bottom-24 right-3 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-opacity hover:opacity-90 will-change-transform md:bottom-6 md:right-4 md:h-14 md:w-14"
       aria-label="Chat on WhatsApp"
-      style={{ boxShadow: "0 0 20px rgba(40, 168, 120, 0.3)" }}
+      style={{ boxShadow: "0 0 20px rgba(37, 211, 102, 0.35)" }}
     >
-      <MessageCircle size={24} />
+      <WhatsAppIcon size={26} />
     </a>
   );
 };

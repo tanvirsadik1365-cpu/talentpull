@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const CTASection = ({ setOpenModal }: any) => {
   return (
-    <section className="section-padding">
+    <section id="final-cta" data-track-section="Final CTA" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -20,6 +20,9 @@ const CTASection = ({ setOpenModal }: any) => {
 
           <button
             onClick={() => setOpenModal(true)}
+            data-track-event="lead_modal_open"
+            data-track-label="Start Free Trial"
+            data-track-location="final_cta"
             className="inline-block rounded-xl bg-background px-8 py-3.5 text-base font-bold text-foreground transition-opacity hover:opacity-90 sm:px-10 sm:py-4 sm:text-lg"
           >
             Start Free Trial

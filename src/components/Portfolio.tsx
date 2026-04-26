@@ -10,7 +10,7 @@ const projects = [
 
 const Portfolio = () => {
   return (
-    <section id="portfolio" className="section-padding">
+    <section id="portfolio" data-track-section="Portfolio" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

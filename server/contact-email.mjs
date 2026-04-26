@@ -1,4 +1,36 @@
 import nodemailer from "nodemailer";
+import fs from "node:fs";
+import path from "node:path";
+
+const loadLocalEnv = () => {
+  const envPath = path.join(process.cwd(), ".env.local");
+
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
+  const envFile = fs.readFileSync(envPath, "utf8");
+
+  for (const line of envFile.split(/\r?\n/)) {
+    const trimmedLine = line.trim();
+
+    if (!trimmedLine || trimmedLine.startsWith("#")) {
+      continue;
+    }
+
+    const separatorIndex = trimmedLine.indexOf("=");
+
+    if (separatorIndex === -1) {
+      continue;
+    }
+
+    const key = trimmedLine.slice(0, separatorIndex).trim();
+    const value = trimmedLine.slice(separatorIndex + 1).trim();
+    process.env[key] ||= value;
+  }
+};
+
+loadLocalEnv();
 
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || "talentpull.uk@gmail.com";
 const SECURITY_ANSWER = "9";
@@ -154,10 +186,32 @@ const createTransport = () => {
   });
 };
 
+const getEmailSetupStatus = () => {
+  const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
+  const smtpUser = process.env.SMTP_USER || "";
+  const smtpPass = process.env.SMTP_PASS?.replace(/\s+/g, "") || "";
+  const usesGmail = smtpHost.includes("gmail.com");
+
+  return {
+    message: "Contact API is running.",
+    recipient: CONTACT_TO_EMAIL,
+    smtpHost,
+    smtpUserConfigured: Boolean(smtpUser),
+    smtpPassConfigured: Boolean(smtpPass),
+    smtpPassLength: smtpPass.length,
+    gmailAppPasswordLengthValid: usesGmail ? smtpPass.length === 16 : null,
+  };
+};
+
 export const handleContactRequest = async (req, res) => {
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
     res.end();
+    return;
+  }
+
+  if (req.method === "GET" || req.method === "HEAD") {
+    sendJson(res, 200, getEmailSetupStatus());
     return;
   }
 

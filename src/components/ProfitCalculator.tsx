@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { trackEvent } from "@/lib/tracking";
 
 const ProfitCalculator = ({ setOpenModal }: any) => {
   const [orders, setOrders] = useState(500);
@@ -14,8 +15,28 @@ const ProfitCalculator = ({ setOpenModal }: any) => {
     return { monthlyRevenue, monthlyLost, yearlyLost };
   }, [orders, avgValue, commission]);
 
+  const trackCalculatorInput = (inputName: string, value: number) => {
+    trackEvent("calculator_input_change", {
+      event_category: "calculator",
+      input_name: inputName,
+      input_value: value,
+    });
+  };
+
+  const startTrialFromCalculator = () => {
+    trackEvent("calculator_cta_click", {
+      event_category: "calculator",
+      monthly_orders: orders,
+      average_order_value: avgValue,
+      commission_percentage: commission,
+      monthly_commission_lost: Math.round(results.monthlyLost),
+      yearly_commission_lost: Math.round(results.yearlyLost),
+    });
+    setOpenModal(true);
+  };
+
   return (
-    <section id="calculator" className="section-padding">
+    <section id="calculator" data-track-section="Calculator" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -52,6 +73,12 @@ const ProfitCalculator = ({ setOpenModal }: any) => {
                 step={50}
                 value={orders}
                 onChange={(event) => setOrders(Number(event.target.value))}
+                onPointerUp={(event) =>
+                  trackCalculatorInput("monthly_orders", Number(event.currentTarget.value))
+                }
+                onBlur={(event) =>
+                  trackCalculatorInput("monthly_orders", Number(event.currentTarget.value))
+                }
                 className="h-2 w-full cursor-pointer rounded-full bg-muted accent-primary"
               />
             </div>
@@ -69,6 +96,12 @@ const ProfitCalculator = ({ setOpenModal }: any) => {
                 step={1}
                 value={avgValue}
                 onChange={(event) => setAvgValue(Number(event.target.value))}
+                onPointerUp={(event) =>
+                  trackCalculatorInput("average_order_value", Number(event.currentTarget.value))
+                }
+                onBlur={(event) =>
+                  trackCalculatorInput("average_order_value", Number(event.currentTarget.value))
+                }
                 className="h-2 w-full cursor-pointer rounded-full bg-muted accent-primary"
               />
             </div>
@@ -86,6 +119,12 @@ const ProfitCalculator = ({ setOpenModal }: any) => {
                 step={1}
                 value={commission}
                 onChange={(event) => setCommission(Number(event.target.value))}
+                onPointerUp={(event) =>
+                  trackCalculatorInput("commission_percentage", Number(event.currentTarget.value))
+                }
+                onBlur={(event) =>
+                  trackCalculatorInput("commission_percentage", Number(event.currentTarget.value))
+                }
                 className="h-2 w-full cursor-pointer rounded-full bg-muted accent-primary"
               />
             </div>
@@ -122,7 +161,7 @@ const ProfitCalculator = ({ setOpenModal }: any) => {
             </div>
 
             <button
-              onClick={() => setOpenModal(true)}
+              onClick={startTrialFromCalculator}
               className="mt-4 rounded-lg bg-primary px-6 py-3 text-center font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               Start Free Trial

@@ -140,6 +140,9 @@ const Navbar = ({ setOpenModal }: any) => {
                         key={link.href}
                         type="button"
                         onClick={() => navigateTo(link.href, true)}
+                        data-track-event="navigation_click"
+                        data-track-label={link.label}
+                        data-track-location="mobile_nav"
                         className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition-all duration-300 hover:border-primary/30 hover:bg-white/[0.05] active:scale-[0.98] animate-in fade-in-0 slide-in-from-bottom-2"
                         style={
                           {
@@ -174,6 +177,9 @@ const Navbar = ({ setOpenModal }: any) => {
                     setMobileOpen(false);
                     window.setTimeout(() => setOpenModal?.(true), 180);
                   }}
+                  data-track-event="lead_modal_open"
+                  data-track-label="Start Free Trial"
+                  data-track-location="mobile_nav"
                   className="relative mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-primary px-6 py-3.5 text-center font-semibold text-primary-foreground shadow-[0_16px_36px_rgba(255,122,61,0.28)] transition-all duration-300 hover:shadow-[0_18px_40px_rgba(255,122,61,0.36)] active:scale-[0.98] animate-in fade-in-0 slide-in-from-bottom-2"
                   style={
                     {
@@ -207,6 +213,9 @@ const Navbar = ({ setOpenModal }: any) => {
           <button
             type="button"
             onClick={() => navigateTo("#top")}
+            data-track-event="navigation_click"
+            data-track-label="Logo"
+            data-track-location="navbar"
             className="flex items-center bg-transparent p-0"
             aria-label="Go to top"
           >
@@ -227,6 +236,9 @@ const Navbar = ({ setOpenModal }: any) => {
                 onClick={() => {
                   navigateTo(link.href);
                 }}
+                data-track-event="navigation_click"
+                data-track-label={link.label}
+                data-track-location="desktop_nav"
                 className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
@@ -236,6 +248,9 @@ const Navbar = ({ setOpenModal }: any) => {
 
             <button
               onClick={() => setOpenModal?.(true)}
+              data-track-event="lead_modal_open"
+              data-track-label="Start Free Trial"
+              data-track-location="desktop_nav"
               className="ml-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-95"
             >
               Start Free Trial
@@ -245,6 +260,9 @@ const Navbar = ({ setOpenModal }: any) => {
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
+            data-track-event="mobile_menu_toggle"
+            data-track-label={mobileOpen ? "Close" : "Open"}
+            data-track-location="navbar"
             className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border transition-all duration-300 active:scale-95 lg:hidden ${
               mobileOpen
                 ? "border-primary/50 bg-primary/15 text-primary shadow-[0_12px_32px_rgba(255,122,61,0.2)]"

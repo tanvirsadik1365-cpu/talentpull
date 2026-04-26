@@ -7,12 +7,14 @@ import {
   Loader2,
   MailCheckIcon,
   MapPin,
-  MessageCircle,
   Phone,
   Send,
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
+
+import WhatsAppIcon from "@/components/WhatsAppIcon";
+import { trackEvent } from "@/lib/tracking";
 
 const FORM_ENDPOINT = "/api/contact";
 const SECURITY_ANSWER = "9";
@@ -34,7 +36,7 @@ const contactItems = [
     body: "020 4578 3585",
   },
   {
-    icon: MessageCircle,
+    icon: WhatsAppIcon,
     title: "WhatsApp (074 2482 2813)",
     body: "We'll contact you after submission.",
   },
@@ -54,14 +56,26 @@ const quickReplies = [
 
 const getSubmissionError = async (response: Response) => {
   try {
-    const data = await response.json();
-    const responseMessage = data?.errors?.[0]?.message || data?.message;
+    const contentType = response.headers.get("content-type") || "";
 
-    if (responseMessage) {
-      return responseMessage;
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      const responseMessage = data?.errors?.[0]?.message || data?.message;
+
+      if (responseMessage) {
+        return responseMessage;
+      }
     }
   } catch {
     // Some hosts return an empty body on server failures.
+  }
+
+  if (response.status === 404) {
+    return "The contact API was not found. Please check the Hostinger Node.js app setup.";
+  }
+
+  if (response.status >= 500) {
+    return "The contact API is running but email failed. Please check Hostinger environment variables and SMTP.";
   }
 
   return "We could not send the form right now. Please try again or message us on WhatsApp.";
@@ -112,6 +126,11 @@ const ContactSection = () => {
       const errorMessage = "Please answer the security check correctly before sending.";
       setStatus("error");
       setStatusMessage(errorMessage);
+      trackEvent("lead_form_error", {
+        event_category: "lead",
+        form_name: "contact_section",
+        error_type: "security_check_failed",
+      });
       toast.error(errorMessage);
       setLoading(false);
       return;
@@ -120,6 +139,12 @@ const ContactSection = () => {
     payload.message = message.trim() || "No extra message provided.";
     payload.lead_source = "TalentPull website contact section";
     payload.page = window.location.href;
+
+    trackEvent("lead_form_submit", {
+      event_category: "lead",
+      form_name: "contact_section",
+      has_message: Boolean(message.trim()),
+    });
 
     try {
       const response = await fetch(FORM_ENDPOINT, {
@@ -135,6 +160,12 @@ const ContactSection = () => {
         const errorMessage = await getSubmissionError(response);
         setStatus("error");
         setStatusMessage(errorMessage);
+        trackEvent("lead_form_error", {
+          event_category: "lead",
+          form_name: "contact_section",
+          error_type: "api_error",
+          response_status: response.status,
+        });
         toast.error(errorMessage);
         return;
       }
@@ -142,12 +173,21 @@ const ContactSection = () => {
       setSuccess(true);
       form.reset();
       setMessage("");
+      trackEvent("lead_form_success", {
+        event_category: "lead",
+        form_name: "contact_section",
+      });
       toast.success("Thanks, your request has been sent.");
     } catch {
       const errorMessage =
         "Something went wrong while sending. Please try again or contact us directly.";
       setStatus("error");
       setStatusMessage(errorMessage);
+      trackEvent("lead_form_error", {
+        event_category: "lead",
+        form_name: "contact_section",
+        error_type: "network_error",
+      });
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -155,7 +195,12 @@ const ContactSection = () => {
   };
 
   return (
-    <section ref={sectionRef} id="contact" className="section-padding bg-background">
+    <section
+      ref={sectionRef}
+      id="contact"
+      data-track-section="Contact"
+      className="section-padding bg-background"
+    >
       <div className="container-main grid items-start gap-8 lg:grid-cols-[0.92fr,1.08fr] lg:gap-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -341,7 +386,14 @@ const ContactSection = () => {
                     <button
                       key={item}
                       type="button"
-                      onClick={() => setMessage(item)}
+                      onClick={() => {
+                        setMessage(item);
+                        trackEvent("quick_reply_select", {
+                          event_category: "lead",
+                          form_name: "contact_section",
+                          quick_reply: item,
+                        });
+                      }}
                       disabled={loading}
                       className={`rounded-full border px-3.5 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
                         message === item
@@ -442,7 +494,13 @@ const ContactSection = () => {
               </p>
               <div className="mt-6 rounded-xl border border-white/10 bg-background/35 px-4 py-3 text-sm text-muted-foreground">
                 Need faster help? WhatsApp us on{" "}
-                <a className="font-semibold text-primary" href="https://wa.me/447424822813">
+                <a
+                  className="font-semibold text-primary"
+                  href="https://wa.me/447424822813"
+                  data-track-event="whatsapp_click"
+                  data-track-label="Contact success WhatsApp"
+                  data-track-location="contact_success"
+                >
                   074 2482 2813
                 </a>
                 .
@@ -454,6 +512,9 @@ const ContactSection = () => {
                   setStatus("idle");
                   setStatusMessage("");
                 }}
+                data-track-event="lead_form_reset"
+                data-track-label="Send another request"
+                data-track-location="contact_success"
                 className="mt-6 rounded-xl border border-white/10 bg-accent px-5 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary"
               >
                 Send another request

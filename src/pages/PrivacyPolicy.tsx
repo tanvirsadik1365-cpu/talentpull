@@ -19,6 +19,10 @@ const PrivacyPolicy = () => {
             any information that you provide when using this website.
           </p>
 
+          <p className="text-sm text-muted-foreground mb-8">
+            Last updated: 26 April 2026
+          </p>
+
           {/* SECTION */}
           <h2 className="text-xl font-bold mb-3">What we collect</h2>
           <ul className="list-disc pl-6 text-muted-foreground mb-6 space-y-2">
@@ -49,8 +53,23 @@ const PrivacyPolicy = () => {
           {/* SECTION */}
           <h2 className="text-xl font-bold mb-3">Cookies</h2>
           <p className="text-muted-foreground mb-6">
-            Cookies help us improve your experience. You can choose to accept
-            or decline cookies in your browser settings.
+            Cookies and similar browser storage help us keep the website secure,
+            remember your cookie choice, and understand how visitors use the site.
+            You can accept or reject non-essential cookies using the cookie banner.
+          </p>
+
+          <h2 className="text-xl font-bold mb-3">Analytics and tracking</h2>
+          <p className="text-muted-foreground mb-4">
+            We use Google Tag Manager to manage analytics and marketing tags.
+            These tools may help us measure page views, section views, button clicks,
+            phone clicks, WhatsApp clicks, social link clicks, calculator activity,
+            growth audit activity, and whether lead forms were submitted successfully.
+          </p>
+          <p className="text-muted-foreground mb-6">
+            We do not intentionally send names, email addresses, phone numbers,
+            restaurant details, postcode values, or message text to Google Tag Manager.
+            Non-essential analytics and advertising storage are set to denied unless
+            you choose to accept cookies.
           </p>
 
           {/* SECTION */}

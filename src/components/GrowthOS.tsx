@@ -11,7 +11,7 @@ const features = [
 
 const GrowthOS = () => {
   return (
-    <section className="section-padding">
+    <section id="growth-os" data-track-section="Growth OS" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

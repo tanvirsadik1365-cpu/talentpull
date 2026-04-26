@@ -10,7 +10,7 @@ const reviews = [
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="section-padding">
+    <section id="testimonials" data-track-section="Testimonials" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

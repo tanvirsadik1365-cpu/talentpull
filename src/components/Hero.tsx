@@ -6,7 +6,11 @@ const Hero = ({ setOpenModal }: any) => {
   const monthlyBars = [35, 45, 40, 60, 55, 70, 85, 75, 90, 80, 95, 100];
 
   return (
-    <section className="relative flex min-h-svh items-center overflow-hidden section-padding pt-24 md:pt-32">
+    <section
+      id="hero"
+      data-track-section="Hero"
+      className="relative flex min-h-svh items-center overflow-hidden section-padding pt-24 md:pt-32"
+    >
 
       {/* Background glow */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
@@ -32,6 +36,9 @@ const Hero = ({ setOpenModal }: any) => {
 
             <button
               onClick={() => setOpenModal(true)}
+              data-track-event="lead_modal_open"
+              data-track-label="Start Free Trial"
+              data-track-location="hero"
               className="animate-pulse-glow will-change-transform rounded-xl bg-primary px-6 py-3.5 text-center text-base font-bold text-primary-foreground shadow-[0_14px_36px_rgba(255,122,61,0.24)] transition-opacity hover:opacity-90 sm:px-8 sm:py-4 sm:text-lg"
             >
               Start Free Trial
@@ -40,6 +47,9 @@ const Hero = ({ setOpenModal }: any) => {
             <button
               type="button"
               onClick={() => scrollToSection("#audit")}
+              data-track-event="navigation_click"
+              data-track-label="Run Free Growth Audit"
+              data-track-location="hero"
               className="flex items-center justify-center gap-2 rounded-xl border border-border px-6 py-3.5 text-center text-base font-semibold text-foreground transition-colors hover:bg-accent sm:px-8 sm:py-4 sm:text-lg"
             >
               Run Free Growth Audit

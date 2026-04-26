@@ -60,7 +60,7 @@ const plans = [
 
 const Pricing = ({ setOpenModal }: any) => {
   return (
-    <section id="pricing" className="section-padding">
+    <section id="pricing" data-track-section="Pricing" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -116,6 +116,9 @@ const Pricing = ({ setOpenModal }: any) => {
 
               <button
                 onClick={() => setOpenModal(true)}
+                data-track-event="lead_modal_open"
+                data-track-label={plan.name}
+                data-track-location="pricing"
                 className={`w-full rounded-lg py-3 text-center font-semibold transition-all hover:opacity-90 ${
                   plan.popular
                     ? "bg-primary text-primary-foreground"

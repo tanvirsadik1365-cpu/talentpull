@@ -2,8 +2,35 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/tracking";
 
 const FORM_ENDPOINT = "/api/contact";
+
+const getSubmissionError = async (response: Response) => {
+  try {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      const body = await response.json();
+
+      if (body?.message) {
+        return body.message;
+      }
+    }
+  } catch {
+    // Some hosts return HTML error pages instead of JSON.
+  }
+
+  if (response.status === 404) {
+    return "The contact API was not found. Please check the Hostinger Node.js app setup.";
+  }
+
+  if (response.status >= 500) {
+    return "The contact API is running but email failed. Please check Hostinger environment variables and SMTP.";
+  }
+
+  return "We could not send the form right now. Please message us on WhatsApp.";
+};
 
 const LeadModal = ({ open, setOpen }: any) => {
   const [success, setSuccess] = useState(false);
@@ -19,9 +46,17 @@ const LeadModal = ({ open, setOpen }: any) => {
     const data = new FormData(form);
     const payload = Object.fromEntries(data.entries());
 
-    payload.message = String(payload.message || "No extra message provided.").trim();
+    const rawMessage = String(payload.message || "").trim();
+
+    payload.message = rawMessage || "No extra message provided.";
     payload.lead_source = "TalentPull start free trial modal";
     payload.page = window.location.href;
+
+    trackEvent("lead_form_submit", {
+      event_category: "lead",
+      form_name: "start_free_trial_modal",
+      has_message: Boolean(rawMessage),
+    });
 
     try {
       const response = await fetch(FORM_ENDPOINT, {
@@ -34,20 +69,33 @@ const LeadModal = ({ open, setOpen }: any) => {
       });
 
       if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        const message =
-          body?.message || "We could not send the form right now. Please message us on WhatsApp.";
+        const message = await getSubmissionError(response);
         setError(message);
+        trackEvent("lead_form_error", {
+          event_category: "lead",
+          form_name: "start_free_trial_modal",
+          error_type: "api_error",
+          response_status: response.status,
+        });
         toast.error(message);
         return;
       }
 
       setSuccess(true);
       form.reset();
+      trackEvent("lead_form_success", {
+        event_category: "lead",
+        form_name: "start_free_trial_modal",
+      });
       toast.success("Thanks, your request has been sent.");
     } catch {
       const message = "Something went wrong while sending. Please try again.";
       setError(message);
+      trackEvent("lead_form_error", {
+        event_category: "lead",
+        form_name: "start_free_trial_modal",
+        error_type: "network_error",
+      });
       toast.error(message);
     } finally {
       setLoading(false);
@@ -74,6 +122,9 @@ const LeadModal = ({ open, setOpen }: any) => {
           >
             <button
               onClick={() => setOpen(false)}
+              data-track-event="lead_modal_close"
+              data-track-label="Close icon"
+              data-track-location="start_free_trial_modal"
               className="absolute right-4 top-4 text-white/50 transition hover:text-white"
               aria-label="Close form"
             >
@@ -150,6 +201,9 @@ const LeadModal = ({ open, setOpen }: any) => {
 
                 <button
                   onClick={() => setOpen(false)}
+                  data-track-event="lead_modal_close"
+                  data-track-label="Success close"
+                  data-track-location="start_free_trial_modal"
                   className="mt-6 rounded-lg bg-primary px-6 py-3 text-white"
                 >
                   Close

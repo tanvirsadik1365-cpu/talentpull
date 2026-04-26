@@ -1,6 +1,7 @@
-import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 
 import { scrollToSection } from "@/lib/scroll-to-section";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 const quickLinks = [
   { label: "Features", href: "#features" },
@@ -21,6 +22,9 @@ const Footer = () => {
             <button
               type="button"
               onClick={() => scrollToSection("#top")}
+              data-track-event="navigation_click"
+              data-track-label="Footer logo"
+              data-track-location="footer"
               className="mb-5 block bg-transparent p-0"
             >
               <img
@@ -60,6 +64,9 @@ const Footer = () => {
                     onClick={() => {
                       scrollToSection(item.href);
                     }}
+                    data-track-event="navigation_click"
+                    data-track-label={item.label}
+                    data-track-location="footer"
                     className="text-left transition-colors hover:text-primary"
                   >
                     {item.label}
@@ -76,9 +83,12 @@ const Footer = () => {
               href="https://wa.me/447424822813"
               target="_blank"
               rel="noopener noreferrer"
+              data-track-event="whatsapp_click"
+              data-track-label="Footer WhatsApp"
+              data-track-location="footer"
               className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
             >
-              <MessageCircle size={18} />
+              <WhatsAppIcon size={18} />
               WhatsApp
             </a>
 
@@ -87,6 +97,9 @@ const Footer = () => {
                 href="https://www.facebook.com/talentpull.uk.marketing/"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track-event="social_click"
+                data-track-label="Facebook"
+                data-track-location="footer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
               >
                 <Facebook size={18} />
@@ -96,6 +109,9 @@ const Footer = () => {
                 href="https://www.instagram.com/talentpull_marketing_agency"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track-event="social_click"
+                data-track-label="Instagram"
+                data-track-location="footer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-white"
               >
                 <Instagram size={18} />
@@ -108,7 +124,13 @@ const Footer = () => {
 
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href="/privacy-policy" className="transition-colors hover:text-primary">
+                <a
+                  href="/privacy-policy"
+                  data-track-event="navigation_click"
+                  data-track-label="Privacy Policy"
+                  data-track-location="footer"
+                  className="transition-colors hover:text-primary"
+                >
                   Privacy Policy
                 </a>
               </li>

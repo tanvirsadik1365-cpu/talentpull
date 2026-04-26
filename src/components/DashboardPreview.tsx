@@ -12,7 +12,7 @@ const sidebarItems = [
 
 const DashboardPreview = () => {
   return (
-    <section className="section-padding">
+    <section id="dashboard-preview" data-track-section="Dashboard Preview" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, Facebook, Globe, Instagram, Loader2, MapPin } from "lucide-react";
+import { trackEvent } from "@/lib/tracking";
 
 interface AuditResult {
   seo: number;
@@ -46,24 +47,44 @@ const GrowthAudit = () => {
 
   const runAudit = () => {
     if (!website) {
+      trackEvent("growth_audit_blocked", {
+        event_category: "audit",
+        reason: "missing_website",
+      });
       return;
     }
 
+    trackEvent("growth_audit_started", {
+      event_category: "audit",
+      has_website: Boolean(website),
+      has_facebook: Boolean(facebook),
+      has_instagram: Boolean(instagram),
+      has_google_business: Boolean(google),
+    });
     setLoading(true);
 
     setTimeout(() => {
-      setResults({
+      const nextResults = {
         seo: Math.floor(Math.random() * 40) + 30,
         speed: Math.floor(Math.random() * 40) + 35,
         google: Math.floor(Math.random() * 50) + 25,
         social: Math.floor(Math.random() * 40) + 40,
+      };
+
+      setResults(nextResults);
+      trackEvent("growth_audit_completed", {
+        event_category: "audit",
+        seo_score: nextResults.seo,
+        speed_score: nextResults.speed,
+        google_score: nextResults.google,
+        social_score: nextResults.social,
       });
       setLoading(false);
     }, 2000);
   };
 
   return (
-    <section id="audit" className="section-padding">
+    <section id="audit" data-track-section="Growth Audit" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

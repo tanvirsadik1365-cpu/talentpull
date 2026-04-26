@@ -27,7 +27,7 @@ const problems = [
 
 const ProblemSection = () => {
   return (
-    <section id="features" className="section-padding">
+    <section id="features" data-track-section="Features" className="section-padding">
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -95,6 +95,9 @@ const ProblemSection = () => {
           <button
             type="button"
             onClick={() => scrollToSection("#calculator")}
+            data-track-event="navigation_click"
+            data-track-label="Calculate Your Lost Profit"
+            data-track-location="features"
             className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             Calculate Your Lost Profit
